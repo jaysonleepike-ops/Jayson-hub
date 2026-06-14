@@ -1,0 +1,246 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+-- ==================== CLEAN UI ====================
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "XenoBrainrotFly"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 220, 0, 170)
+mainFrame.Position = UDim2.new(0.5, -110, 0.1, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 28)
+title.Position = UDim2.new(0, 0, 0, 6)
+title.Text = "Jaysons fly script"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 17
+title.Font = Enum.Font.GothamBold
+title.BackgroundTransparency = 1
+title.Parent = mainFrame
+
+-- Fly Toggle
+local flyButton = Instance.new("TextButton")
+flyButton.Size = UDim2.new(0.9, 0, 0, 38)
+flyButton.Position = UDim2.new(0.05, 0, 0, 38)
+flyButton.Text = "FLY: OFF"
+flyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyButton.TextSize = 16
+flyButton.Font = Enum.Font.GothamBold
+flyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+flyButton.Parent = mainFrame
+
+local flyCorner = Instance.new("UICorner")
+flyCorner.CornerRadius = UDim.new(0, 6)
+flyCorner.Parent = flyButton
+
+-- Speed Label
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, 0, 0, 24)
+speedLabel.Position = UDim2.new(0, 0, 0, 80)
+speedLabel.Text = "Speed: 50"
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.TextSize = 15
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.BackgroundTransparency = 1
+speedLabel.Parent = mainFrame
+
+-- Instruction
+local instruction = Instance.new("TextLabel")
+instruction.Size = UDim2.new(1, 0, 0, 20)
+instruction.Position = UDim2.new(0, 0, 0, 102)
+instruction.Text = "W = forward | S = backward | Space = UP | Ctrl = DOWN"
+instruction.TextColor3 = Color3.fromRGB(200, 200, 200)
+instruction.TextSize = 11
+instruction.Font = Enum.Font.Gotham
+instruction.BackgroundTransparency = 1
+instruction.Parent = mainFrame
+
+-- + Button
+local plusButton = Instance.new("TextButton")
+plusButton.Size = UDim2.new(0.42, 0, 0, 32)
+plusButton.Position = UDim2.new(0.08, 0, 0, 125)
+plusButton.Text = "+"
+plusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+plusButton.TextSize = 20
+plusButton.Font = Enum.Font.GothamBold
+plusButton.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+plusButton.Parent = mainFrame
+
+local plusCorner = Instance.new("UICorner")
+plusCorner.CornerRadius = UDim.new(0, 6)
+plusCorner.Parent = plusButton
+
+-- - Button
+local minusButton = Instance.new("TextButton")
+minusButton.Size = UDim2.new(0.42, 0, 0, 32)
+minusButton.Position = UDim2.new(0.5, 0, 0, 125)
+minusButton.Text = "-"
+minusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+minusButton.TextSize = 20
+minusButton.Font = Enum.Font.GothamBold
+minusButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+minusButton.Parent = mainFrame
+
+local minusCorner = Instance.new("UICorner")
+minusCorner.CornerRadius = UDim.new(0, 6)
+minusCorner.Parent = minusButton
+
+-- ==================== DRAGGABLE ====================
+local function makeDraggable(frame)
+    local dragging = false
+    local dragInput
+    local dragStart
+    local startPos
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+makeDraggable(mainFrame)
+
+-- ==================== VARIABLES ====================
+local flying = false
+local speed = 50
+local verticalSpeed = 35
+local camera = workspace.CurrentCamera
+
+-- ==================== FLY LOGIC (weniger Rubberband) ====================
+RunService.Heartbeat:Connect(function()
+    if not flying or not rootPart or not rootPart.Parent then return end
+    
+    local horizontalDir = Vector3.new(0, 0, 0)
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then 
+        horizontalDir = horizontalDir + camera.CFrame.LookVector 
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then 
+        horizontalDir = horizontalDir - camera.CFrame.LookVector 
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then 
+        horizontalDir = horizontalDir - camera.CFrame.RightVector 
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then 
+        horizontalDir = horizontalDir + camera.CFrame.RightVector 
+    end
+
+    if horizontalDir.Magnitude > 0 then
+        horizontalDir = horizontalDir.Unit
+    end
+
+    local horizontalVel = horizontalDir * speed
+
+    local verticalVel = 0
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then 
+        verticalVel = verticalSpeed
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then 
+        verticalVel = -verticalSpeed
+    end
+
+    local targetVel = horizontalVel + Vector3.new(0, verticalVel, 0)
+
+    -- Idle Hover
+    if targetVel.Magnitude == 0 then
+        if rootPart.Velocity.Y < 0 then
+            targetVel = Vector3.new(0, 2.8, 0)
+        else
+            targetVel = Vector3.new(0, 0, 0)
+        end
+    end
+
+    -- Smooth Velocity (weniger zurück laggen)
+    rootPart.Velocity = rootPart.Velocity:Lerp(targetVel, 0.8)
+
+    -- Anti-Spin
+    rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+end)
+
+-- ==================== TOGGLE FLY ====================
+local function toggleFly()
+    flying = not flying
+    
+    if flying then
+        flyButton.Text = "FLY: ON"
+        flyButton.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+        humanoid.PlatformStand = true
+        humanoid.AutoRotate = false
+    else
+        flyButton.Text = "FLY: OFF"
+        flyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        humanoid.PlatformStand = false
+        humanoid.AutoRotate = true
+        if rootPart then rootPart.Velocity = Vector3.new(0, 0, 0) end
+    end
+end
+
+flyButton.MouseButton1Click:Connect(toggleFly)
+
+-- ==================== SPEED BUTTONS ====================
+plusButton.MouseButton1Click:Connect(function()
+    speed = speed + 1
+    speedLabel.Text = "Speed: " .. speed
+end)
+
+minusButton.MouseButton1Click:Connect(function()
+    speed = math.max(10, speed - 1)
+    speedLabel.Text = "Speed: " .. speed
+end)
+
+-- ==================== RESPAWN SUPPORT ====================
+player.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    humanoid = character:WaitForChild("Humanoid")
+    rootPart = character:WaitForChild("HumanoidRootPart")
+    
+    if flying then
+        flying = false
+        flyButton.Text = "FLY: OFF"
+        flyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        humanoid.PlatformStand = false
+        humanoid.AutoRotate = true
+    end
+end)
+
+-- ==================== F KEY TOGGLE ====================
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.F then
+        toggleFly()
+    end
+end)
