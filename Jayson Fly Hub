@@ -137,13 +137,13 @@ makeDraggable(mainFrame)
 -- ==================== VARIABLES ====================
 local flying = false
 local speed = 50
+local verticalSpeed = 35
 local camera = workspace.CurrentCamera
 
--- ==================== FLY LOGIC (FIXED VERTICAL) ====================
+-- ==================== FLY LOGIC (weniger Rubberband) ====================
 RunService.Heartbeat:Connect(function()
     if not flying or not rootPart or not rootPart.Parent then return end
     
-    -- Horizontal movement (WASD)
     local horizontalDir = Vector3.new(0, 0, 0)
 
     if UserInputService:IsKeyDown(Enum.KeyCode.W) then 
@@ -163,22 +163,32 @@ RunService.Heartbeat:Connect(function()
         horizontalDir = horizontalDir.Unit
     end
 
-    -- Apply speed to horizontal movement
     local horizontalVel = horizontalDir * speed
 
-    -- Vertical movement (Space = UP, Ctrl = DOWN) - GLEICHE GESCHWINDIGKEIT wie horizontal!
     local verticalVel = 0
     if UserInputService:IsKeyDown(Enum.KeyCode.Space) then 
-        verticalVel = speed  -- JETZT: gleiche Geschwindigkeit wie horizontal!
+        verticalVel = verticalSpeed
     end
     if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then 
-        verticalVel = -speed  -- JETZT: gleiche Geschwindigkeit wie horizontal!
+        verticalVel = -verticalSpeed
     end
 
     local targetVel = horizontalVel + Vector3.new(0, verticalVel, 0)
 
-    -- KEIN Lerp mehr - direkt setzen (wie dein Original!)
-    rootPart.Velocity = targetVel
+    -- Idle Hover
+    if targetVel.Magnitude == 0 then
+        if rootPart.Velocity.Y < 0 then
+            targetVel = Vector3.new(0, 2.8, 0)
+        else
+            targetVel = Vector3.new(0, 0, 0)
+        end
+    end
+
+    -- Smooth Velocity (weniger zurück laggen)
+    rootPart.Velocity = rootPart.Velocity:Lerp(targetVel, 0.8)
+
+    -- Anti-Spin
+    rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
 end)
 
 -- ==================== TOGGLE FLY ====================
@@ -189,10 +199,12 @@ local function toggleFly()
         flyButton.Text = "FLY: ON"
         flyButton.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
         humanoid.PlatformStand = true
+        humanoid.AutoRotate = false
     else
         flyButton.Text = "FLY: OFF"
         flyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         humanoid.PlatformStand = false
+        humanoid.AutoRotate = true
         if rootPart then rootPart.Velocity = Vector3.new(0, 0, 0) end
     end
 end
@@ -221,10 +233,11 @@ player.CharacterAdded:Connect(function(newChar)
         flyButton.Text = "FLY: OFF"
         flyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
         humanoid.PlatformStand = false
+        humanoid.AutoRotate = true
     end
 end)
 
--- ==================== TASTATUR TOGGLE ====================
+-- ==================== F KEY TOGGLE ====================
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.F then
