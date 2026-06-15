@@ -1,106 +1,109 @@
-local Players = game:GetService("Players")
+Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
 -- ==================== CLEAN UI ====================
+
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "XenoBrainrotFly"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
+-- MAIN FRAME
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 220, 0, 170)
-mainFrame.Position = UDim2.new(0.5, -110, 0.1, 0)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.Size = UDim2.new(0, 320, 0, 240)
+mainFrame.Position = UDim2.new(0.5, -160, 0.1, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
-corner.Parent = mainFrame
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 16)
 
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(0, 255, 200)
+stroke.Thickness = 2
+stroke.Transparency = 0.25
+stroke.Parent = mainFrame
+
+-- TITLE
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 28)
-title.Position = UDim2.new(0, 0, 0, 6)
-title.Text = "Jayson Fly PAID"
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+title.BorderSizePixel = 0
+title.Text = "Jayson Fly Paid"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 22
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 17
-title.Font = Enum.Font.GothamBold
-title.BackgroundTransparency = 1
 title.Parent = mainFrame
 
--- Fly Toggle
-local flyButton = Instance.new("TextButton")
-flyButton.Size = UDim2.new(0.9, 0, 0, 38)
-flyButton.Position = UDim2.new(0.05, 0, 0, 38)
-flyButton.Text = "FLY: OFF"
-flyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-flyButton.TextSize = 16
-flyButton.Font = Enum.Font.GothamBold
-flyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 16)
+
+-- FLY BUTTON (CREATED PROPERLY)
+flyButton = Instance.new("TextButton")
+flyButton.Size = UDim2.new(0.9, 0, 0, 55)
+flyButton.Position = UDim2.new(0.05, 0, 0, 55)
+flyButton.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+flyButton.Text = "✖ FLY OFF"
+flyButton.Font = Enum.Font.GothamBlack
+flyButton.TextSize = 22
+flyButton.TextColor3 = Color3.fromRGB(255, 80, 80)
 flyButton.Parent = mainFrame
 
-local flyCorner = Instance.new("UICorner")
-flyCorner.CornerRadius = UDim.new(0, 6)
-flyCorner.Parent = flyButton
+Instance.new("UICorner", flyButton).CornerRadius = UDim.new(0, 12)
 
--- Speed Label
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(1, 0, 0, 24)
-speedLabel.Position = UDim2.new(0, 0, 0, 80)
-speedLabel.Text = "Speed: 50"
+-- SPEED LABEL (CREATED PROPERLY)
+speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0.9, 0, 0, 40)
+speedLabel.Position = UDim2.new(0.05, 0, 0, 120)
+speedLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+speedLabel.Text = "⚡ SPEED : 50"
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.TextSize = 18
 speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedLabel.TextSize = 15
-speedLabel.Font = Enum.Font.Gotham
-speedLabel.BackgroundTransparency = 1
 speedLabel.Parent = mainFrame
 
--- Instruction
-local instruction = Instance.new("TextLabel")
-instruction.Size = UDim2.new(1, 0, 0, 20)
-instruction.Position = UDim2.new(0, 0, 0, 102)
-instruction.Text = "W = forward | S = backward | Space = UP | Ctrl = DOWN"
-instruction.TextColor3 = Color3.fromRGB(200, 200, 200)
-instruction.TextSize = 11
-instruction.Font = Enum.Font.Gotham
+Instance.new("UICorner", speedLabel).CornerRadius = UDim.new(0, 12)
+
+-- INSTRUCTION
+instruction = Instance.new("TextLabel")
+instruction.Size = UDim2.new(0.9, 0, 0, 25)
+instruction.Position = UDim2.new(0.05, 0, 0, 165)
 instruction.BackgroundTransparency = 1
+instruction.Text = "WASD Move | Space Up | Ctrl Down"
+instruction.Font = Enum.Font.Gotham
+instruction.TextSize = 13
+instruction.TextColor3 = Color3.fromRGB(200, 200, 200)
 instruction.Parent = mainFrame
 
--- + Button
-local plusButton = Instance.new("TextButton")
-plusButton.Size = UDim2.new(0.42, 0, 0, 32)
-plusButton.Position = UDim2.new(0.08, 0, 0, 125)
+-- PLUS BUTTON
+plusButton = Instance.new("TextButton")
+plusButton.Size = UDim2.new(0.43, 0, 0, 32)
+plusButton.Position = UDim2.new(0.05, 0, 0, 200)
 plusButton.Text = "+"
+plusButton.Font = Enum.Font.GothamBlack
+plusButton.TextSize = 22
+plusButton.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
 plusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-plusButton.TextSize = 20
-plusButton.Font = Enum.Font.GothamBold
-plusButton.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
 plusButton.Parent = mainFrame
 
-local plusCorner = Instance.new("UICorner")
-plusCorner.CornerRadius = UDim.new(0, 6)
-plusCorner.Parent = plusButton
+Instance.new("UICorner", plusButton).CornerRadius = UDim.new(0, 10)
 
--- - Button
-local minusButton = Instance.new("TextButton")
-minusButton.Size = UDim2.new(0.42, 0, 0, 32)
-minusButton.Position = UDim2.new(0.5, 0, 0, 125)
+-- MINUS BUTTON
+minusButton = Instance.new("TextButton")
+minusButton.Size = UDim2.new(0.43, 0, 0, 32)
+minusButton.Position = UDim2.new(0.52, 0, 0, 200)
 minusButton.Text = "-"
+minusButton.Font = Enum.Font.GothamBlack
+minusButton.TextSize = 22
+minusButton.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
 minusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-minusButton.TextSize = 20
-minusButton.Font = Enum.Font.GothamBold
-minusButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
 minusButton.Parent = mainFrame
 
-local minusCorner = Instance.new("UICorner")
-minusCorner.CornerRadius = UDim.new(0, 6)
-minusCorner.Parent = minusButton
-
+Instance.new("UICorner", minusButton).CornerRadius = UDim.new(0, 10)
 -- ==================== DRAGGABLE ====================
 local function makeDraggable(frame)
     local dragging = false
@@ -140,61 +143,64 @@ local speed = 50
 local verticalSpeed = 35
 local camera = workspace.CurrentCamera
 
--- ==================== FLY LOGIC (weniger Rubberband) ====================
-RunService.Heartbeat:Connect(function()
+-- ==================== FLY LOGIC ====================
+RunService.Stepped:Connect(function()
     if not flying or not rootPart or not rootPart.Parent then return end
-    
-    local horizontalDir = Vector3.new(0, 0, 0)
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.W) then 
-        horizontalDir = horizontalDir + camera.CFrame.LookVector 
-    end
-    if UserInputService:IsKeyDown(Enum.KeyCode.S) then 
-        horizontalDir = horizontalDir - camera.CFrame.LookVector 
-    end
-    if UserInputService:IsKeyDown(Enum.KeyCode.A) then 
-        horizontalDir = horizontalDir - camera.CFrame.RightVector 
-    end
-    if UserInputService:IsKeyDown(Enum.KeyCode.D) then 
-        horizontalDir = horizontalDir + camera.CFrame.RightVector 
+    -- Godmode
+    if humanoid then
+        humanoid.MaxHealth = math.huge
+        humanoid.Health = math.huge
+        humanoid.BreakJointsOnDeath = false
+        pcall(function() humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false) end)
     end
 
-    if horizontalDir.Magnitude > 0 then
-        horizontalDir = horizontalDir.Unit
-    end
+    local pressingW = UserInputService:IsKeyDown(Enum.KeyCode.W)
+    local pressingA = UserInputService:IsKeyDown(Enum.KeyCode.A)
+    local pressingS = UserInputService:IsKeyDown(Enum.KeyCode.S)
+    local pressingD = UserInputService:IsKeyDown(Enum.KeyCode.D)
+    local pressingSpace = UserInputService:IsKeyDown(Enum.KeyCode.Space)
+    local pressingCtrl = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
 
-    local horizontalVel = horizontalDir * speed
+    local anyKeyPressed = pressingW or pressingA or pressingS or pressingD or pressingSpace or pressingCtrl
 
-    local verticalVel = 0
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then 
-        verticalVel = verticalSpeed
-    end
-    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then 
-        verticalVel = -verticalSpeed
-    end
+    if not anyKeyPressed then
+        rootPart.Velocity = Vector3.new(0, 0, 0)
+        rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    else
+        local horizontalDir = Vector3.new(0, 0, 0)
 
-    local targetVel = horizontalVel + Vector3.new(0, verticalVel, 0)
+        if pressingW then horizontalDir = horizontalDir + camera.CFrame.LookVector end
+        if pressingS then horizontalDir = horizontalDir - camera.CFrame.LookVector end
+        if pressingA then horizontalDir = horizontalDir - camera.CFrame.RightVector end
+        if pressingD then horizontalDir = horizontalDir + camera.CFrame.RightVector end
 
-    -- Idle Hover
-    if targetVel.Magnitude == 0 then
-        if rootPart.Velocity.Y < 0 then
-            targetVel = Vector3.new(0, 2.8, 0)
-        else
-            targetVel = Vector3.new(0, 0, 0)
+        if horizontalDir.Magnitude > 0 then
+            horizontalDir = horizontalDir.Unit
         end
+
+        local horizontalVel = horizontalDir * speed
+        local verticalVel = 0
+
+        if pressingSpace then verticalVel = verticalSpeed end
+        if pressingCtrl then verticalVel = -verticalSpeed end
+
+        local targetVel = horizontalVel + Vector3.new(0, verticalVel, 0)
+        rootPart.Velocity = rootPart.Velocity:Lerp(targetVel, 0.9)
+        rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
     end
 
-    -- Smooth Velocity (weniger zurück laggen)
-    rootPart.Velocity = rootPart.Velocity:Lerp(targetVel, 0.8)
-
-    -- Anti-Spin
-    rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    -- ==================== FULL 3D LOOK (FIXED) ====================
+    if camera then
+        rootPart.CFrame = CFrame.new(rootPart.Position) * camera.CFrame.Rotation
+    end
+    -- ============================================================
 end)
 
 -- ==================== TOGGLE FLY ====================
 local function toggleFly()
     flying = not flying
-    
     if flying then
         flyButton.Text = "FLY: ON"
         flyButton.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
@@ -227,13 +233,10 @@ player.CharacterAdded:Connect(function(newChar)
     character = newChar
     humanoid = character:WaitForChild("Humanoid")
     rootPart = character:WaitForChild("HumanoidRootPart")
-    
+
     if flying then
-        flying = false
-        flyButton.Text = "FLY: OFF"
-        flyButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-        humanoid.PlatformStand = false
-        humanoid.AutoRotate = true
+        humanoid.PlatformStand = true
+        humanoid.AutoRotate = false
     end
 end)
 
