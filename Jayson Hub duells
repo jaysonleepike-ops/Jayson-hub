@@ -454,7 +454,7 @@ end
 activateBtn.MouseButton1Click:Connect(function()
     mobileButtonsActive = not mobileButtonsActive
     if mobileButtonsActive then
-        activateBtn.Text = "Active"
+        activateBtn.Text = "Disactivate?"
         activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
         createMobileButtons()
     else
