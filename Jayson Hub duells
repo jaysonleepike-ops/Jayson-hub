@@ -1,8 +1,6 @@
--- Jayson Hub - With TP DOWN Button
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-
 local Player = Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 
@@ -33,7 +31,7 @@ HubCorner.Parent = HubButton
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 255, 0, 230)
+MainFrame.Size = UDim2.new(0, 255, 0, 270)
 MainFrame.Position = UDim2.new(0.5, -127, 0.3, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MainFrame.BorderSizePixel = 0
@@ -80,12 +78,12 @@ mobileCorner.CornerRadius = UDim.new(0, 6)
 mobileCorner.Parent = mobileBtn
 
 local infJumpBtn = Instance.new("TextButton")
-infJumpBtn.Size = UDim2.new(0.84, 0, 0, 40)
+infJumpBtn.Size = UDim2.new(0.84, 0, 0, 35)
 infJumpBtn.Position = UDim2.new(0.08, 0, 0.35, 0)
 infJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 infJumpBtn.Text = "Infinite Jump: OFF"
 infJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-infJumpBtn.TextSize = 16
+infJumpBtn.TextSize = 14
 infJumpBtn.Font = Enum.Font.GothamBold
 infJumpBtn.Parent = MainFrame
 
@@ -93,6 +91,22 @@ local infCorner = Instance.new("UICorner")
 infCorner.CornerRadius = UDim.new(0, 9)
 infCorner.Parent = infJumpBtn
 
+-- ===== ANTI RAGDOLL BUTTON =====
+local antiRagdollBtn = Instance.new("TextButton")
+antiRagdollBtn.Size = UDim2.new(0.84, 0, 0, 35)
+antiRagdollBtn.Position = UDim2.new(0.08, 0, 0.50, 0)
+antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+antiRagdollBtn.Text = "Anti Ragdoll: OFF"
+antiRagdollBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+antiRagdollBtn.TextSize = 14
+antiRagdollBtn.Font = Enum.Font.GothamBold
+antiRagdollBtn.Parent = MainFrame
+
+local antiRagdollCorner = Instance.new("UICorner")
+antiRagdollCorner.CornerRadius = UDim.new(0, 9)
+antiRagdollCorner.Parent = antiRagdollBtn
+
+-- Mobile Frame
 local mobileFrame = Instance.new("Frame")
 mobileFrame.Size = UDim2.new(1, 0, 0, 140)
 mobileFrame.Position = UDim2.new(0, 0, 0.4, 0)
@@ -125,6 +139,20 @@ local jumpConnection = nil
 local mobileButtonsActive = false
 local mobileGUIs = {}
 
+-- ===== FLY VARIABLES =====
+local flying = false
+local currentSpeed = 50
+local verticalSpeed = 35
+local camera = workspace.CurrentCamera
+local humanoid = nil
+local rootPart = nil
+local flySteppedConnection = nil
+
+-- ===== ANTI RAGDOLL VARIABLES =====
+local antiRagdollEnabled = false
+local ragdollConnection = nil
+local autoStopTask = nil
+
 HubButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
@@ -133,11 +161,156 @@ mobileBtn.MouseButton1Click:Connect(function()
     mobileFrame.Visible = not mobileFrame.Visible
     if mobileFrame.Visible then
         infJumpBtn.Visible = false
+        antiRagdollBtn.Visible = false
     else
         infJumpBtn.Visible = true
+        antiRagdollBtn.Visible = true
     end
 end)
 
+-- ===== FLY SYSTEM =====
+local function setupFlyChar(char)
+    humanoid = char:FindFirstChild("Humanoid")
+    rootPart = char:FindFirstChild("HumanoidRootPart")
+end
+
+Player.CharacterAdded:Connect(setupFlyChar)
+if Character then setupFlyChar(Character) end
+
+local function startFly()
+    if not rootPart or not rootPart.Parent then return end
+    flying = true
+    
+    if humanoid then
+        humanoid.PlatformStand = true
+    end
+    
+    if flySteppedConnection then flySteppedConnection:Disconnect() end
+    
+    flySteppedConnection = RunService.Stepped:Connect(function()
+        if not flying or not rootPart or not rootPart.Parent then return end
+        
+        local pressingW = UserInputService:IsKeyDown(Enum.KeyCode.W)
+        local pressingA = UserInputService:IsKeyDown(Enum.KeyCode.A)
+        local pressingS = UserInputService:IsKeyDown(Enum.KeyCode.S)
+        local pressingD = UserInputService:IsKeyDown(Enum.KeyCode.D)
+        local pressingSpace = UserInputService:IsKeyDown(Enum.KeyCode.Space)
+        local pressingCtrl = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
+        
+        if not (pressingW or pressingA or pressingS or pressingD or pressingSpace or pressingCtrl) then
+            rootPart.Velocity = Vector3.new(0, 0, 0)
+        else
+            local dir = Vector3.new(0, 0, 0)
+            if pressingW then dir = dir + camera.CFrame.LookVector end
+            if pressingS then dir = dir - camera.CFrame.LookVector end
+            if pressingA then dir = dir - camera.CFrame.RightVector end
+            if pressingD then dir = dir + camera.CFrame.RightVector end
+            
+            if dir.Magnitude > 0 then dir = dir.Unit end
+            
+            local vertical = 0
+            if pressingSpace then vertical = verticalSpeed end
+            if pressingCtrl then vertical = -verticalSpeed end
+            
+            rootPart.Velocity = (dir * currentSpeed) + Vector3.new(0, vertical, 0)
+        end
+    end)
+end
+
+local function stopFly()
+    flying = false
+    if flySteppedConnection then
+        flySteppedConnection:Disconnect()
+        flySteppedConnection = nil
+    end
+    if rootPart then
+        rootPart.Velocity = Vector3.new(0, 0, 0)
+    end
+    if humanoid then
+        humanoid.PlatformStand = false
+    end
+end
+
+-- ===== ANTI RAGDOLL SYSTEM (4.3s Auto Deactivate) =====
+local function setupAntiRagdoll()
+    if ragdollConnection then
+        ragdollConnection:Disconnect()
+        ragdollConnection = nil
+    end
+    
+    if not antiRagdollEnabled then return end
+    
+    local char = Player.Character
+    if not char then return end
+    
+    local hum = char:FindFirstChild("Humanoid")
+    if not hum then return end
+    
+    ragdollConnection = hum.StateChanged:Connect(function(oldState, newState)
+        if not antiRagdollEnabled then return end
+        
+        if newState == Enum.HumanoidStateType.Ragdoll or 
+           newState == Enum.HumanoidStateType.FallingDown or
+           newState == Enum.HumanoidStateType.Physics then
+            
+            if not flying then
+                print("🟢 Ragdoll detected! Activating Fly for 4.3 seconds...")
+                startFly()
+            end
+            
+            -- Cancel old timer
+            if autoStopTask then
+                task.cancel(autoStopTask)
+            end
+            
+            -- Auto deactivate after 4.3 seconds
+            autoStopTask = task.delay(4.3, function()
+                if flying then
+                    print("⏰ 4.3 seconds passed - Deactivating Fly")
+                    stopFly()
+                end
+                autoStopTask = nil
+            end)
+        end
+    end)
+end
+
+-- ===== ANTI RAGDOLL TOGGLE =====
+antiRagdollBtn.MouseButton1Click:Connect(function()
+    antiRagdollEnabled = not antiRagdollEnabled
+    
+    if antiRagdollEnabled then
+        antiRagdollBtn.Text = "Anti Ragdoll: ON"
+        antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+        setupAntiRagdoll()
+    else
+        antiRagdollBtn.Text = "Anti Ragdoll: OFF"
+        antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        
+        if ragdollConnection then
+            ragdollConnection:Disconnect()
+            ragdollConnection = nil
+        end
+        if autoStopTask then
+            task.cancel(autoStopTask)
+            autoStopTask = nil
+        end
+        if flying then
+            stopFly()
+        end
+    end
+end)
+
+Player.CharacterAdded:Connect(function(char)
+    Character = char
+    task.wait(1)
+    setupFlyChar(char)
+    if antiRagdollEnabled then
+        setupAntiRagdoll()
+    end
+end)
+
+-- ===== MOBILE BUTTONS =====
 local function createMobileButtons()
     -- DROP BR
     local dropScreenGui = Instance.new("ScreenGui")
@@ -153,6 +326,7 @@ local function createMobileButtons()
     dropCircle.Active = true
     dropCircle.Draggable = true
     dropCircle.Parent = dropScreenGui
+
     Instance.new("UICorner", dropCircle).CornerRadius = UDim.new(1, 0)
 
     local textLabel = Instance.new("TextLabel")
@@ -168,10 +342,11 @@ local function createMobileButtons()
         local char = Player.Character
         if not char then return end
         local rootPart = char:FindFirstChild("HumanoidRootPart")
-        if not rootPart then return end
-        rootPart.Velocity = Vector3.new(rootPart.Velocity.X, 135, rootPart.Velocity.Z)
-        task.wait(0.13)
-        rootPart.Velocity = Vector3.new(rootPart.Velocity.X, -75, rootPart.Velocity.Z)
+        if rootPart then
+            rootPart.Velocity = Vector3.new(rootPart.Velocity.X, 135, rootPart.Velocity.Z)
+            task.wait(0.13)
+            rootPart.Velocity = Vector3.new(rootPart.Velocity.X, -75, rootPart.Velocity.Z)
+        end
     end
 
     dropCircle.InputBegan:Connect(function(input)
@@ -179,9 +354,10 @@ local function createMobileButtons()
             jumpDrop()
         end
     end)
+
     table.insert(mobileGUIs, dropScreenGui)
 
-    -- FLY + FLY CARRY
+    -- FLY BUTTONS
     local flyScreenGui = Instance.new("ScreenGui")
     flyScreenGui.Name = "FlyCircles"
     flyScreenGui.ResetOnSpawn = false
@@ -195,6 +371,7 @@ local function createMobileButtons()
     flyCircle.Active = true
     flyCircle.Draggable = true
     flyCircle.Parent = flyScreenGui
+
     Instance.new("UICorner", flyCircle).CornerRadius = UDim.new(1, 0)
 
     local flyText = Instance.new("TextLabel")
@@ -214,6 +391,7 @@ local function createMobileButtons()
     carryCircle.Active = true
     carryCircle.Draggable = true
     carryCircle.Parent = flyScreenGui
+
     Instance.new("UICorner", carryCircle).CornerRadius = UDim.new(1, 0)
 
     local carryText = Instance.new("TextLabel")
@@ -225,59 +403,15 @@ local function createMobileButtons()
     carryText.TextColor3 = Color3.fromRGB(170, 0, 255)
     carryText.Parent = carryCircle
 
-    local flying = false
-    local currentSpeed = 50
-    local verticalSpeed = 35
-    local camera = workspace.CurrentCamera
-    local humanoid = nil
-    local rootPart = nil
-
-    local function setupFlyChar(char)
-        humanoid = char:FindFirstChild("Humanoid")
-        rootPart = char:FindFirstChild("HumanoidRootPart")
-    end
-    Player.CharacterAdded:Connect(setupFlyChar)
-    if Character then setupFlyChar(Character) end
-
-    RunService.Stepped:Connect(function()
-        if not flying or not rootPart or not rootPart.Parent then return end
-
-        local pressingW = UserInputService:IsKeyDown(Enum.KeyCode.W)
-        local pressingA = UserInputService:IsKeyDown(Enum.KeyCode.A)
-        local pressingS = UserInputService:IsKeyDown(Enum.KeyCode.S)
-        local pressingD = UserInputService:IsKeyDown(Enum.KeyCode.D)
-        local pressingSpace = UserInputService:IsKeyDown(Enum.KeyCode.Space)
-        local pressingCtrl = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
-
-        if not (pressingW or pressingA or pressingS or pressingD or pressingSpace or pressingCtrl) then
-            rootPart.Velocity = Vector3.new(0, 0, 0)
-        else
-            local dir = Vector3.new(0, 0, 0)
-            if pressingW then dir = dir + camera.CFrame.LookVector end
-            if pressingS then dir = dir - camera.CFrame.LookVector end
-            if pressingA then dir = dir - camera.CFrame.RightVector end
-            if pressingD then dir = dir + camera.CFrame.RightVector end
-            if dir.Magnitude > 0 then dir = dir.Unit end
-
-            local vertical = 0
-            if pressingSpace then vertical = verticalSpeed end
-            if pressingCtrl then vertical = -verticalSpeed end
-
-            rootPart.Velocity = (dir * currentSpeed) + Vector3.new(0, vertical, 0)
-        end
-    end)
-
     local function toggleFly(mode)
         if mode == "normal" then
             if flying and currentSpeed == 50 then
-                flying = false
-                currentSpeed = 50
+                stopFly()
                 flyText.Text = "FLY"
                 flyText.TextColor3 = Color3.fromRGB(170, 0, 255)
-                if rootPart then rootPart.Velocity = Vector3.new(0, 0, 0) end
             else
-                flying = true
                 currentSpeed = 50
+                startFly()
                 flyText.Text = "ON"
                 flyText.TextColor3 = Color3.fromRGB(0, 255, 100)
                 carryText.Text = "FLY\nCARRY"
@@ -285,14 +419,12 @@ local function createMobileButtons()
             end
         elseif mode == "carry" then
             if flying and currentSpeed == 29 then
-                flying = false
-                currentSpeed = 29
+                stopFly()
                 carryText.Text = "FLY\nCARRY"
                 carryText.TextColor3 = Color3.fromRGB(170, 0, 255)
-                if rootPart then rootPart.Velocity = Vector3.new(0, 0, 0) end
             else
-                flying = true
                 currentSpeed = 29
+                startFly()
                 carryText.Text = "ON"
                 carryText.TextColor3 = Color3.fromRGB(0, 255, 100)
                 flyText.Text = "FLY"
@@ -322,7 +454,7 @@ local function createMobileButtons()
 
     table.insert(mobileGUIs, flyScreenGui)
 
-    -- ==================== TP DOWN BUTTON (NEW) ====================
+    -- TP DOWN
     local tpDownScreenGui = Instance.new("ScreenGui")
     tpDownScreenGui.Name = "TPDown"
     tpDownScreenGui.ResetOnSpawn = false
@@ -330,12 +462,13 @@ local function createMobileButtons()
 
     local tpDownCircle = Instance.new("Frame")
     tpDownCircle.Size = UDim2.new(0, 55, 0, 55)
-    tpDownCircle.Position = UDim2.new(0.82, -27, 0.72, 0) -- Below other buttons
+    tpDownCircle.Position = UDim2.new(0.82, -27, 0.72, 0)
     tpDownCircle.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
     tpDownCircle.BorderSizePixel = 0
     tpDownCircle.Active = true
     tpDownCircle.Draggable = true
     tpDownCircle.Parent = tpDownScreenGui
+
     Instance.new("UICorner", tpDownCircle).CornerRadius = UDim.new(1, 0)
 
     local tpDownText = Instance.new("TextLabel")
@@ -353,7 +486,6 @@ local function createMobileButtons()
             if char then
                 local rootPart = char:FindFirstChild("HumanoidRootPart")
                 if rootPart then
-                    -- Fly down really fast
                     rootPart.Velocity = Vector3.new(rootPart.Velocity.X, -200, rootPart.Velocity.Z)
                 end
             end
@@ -362,7 +494,7 @@ local function createMobileButtons()
 
     table.insert(mobileGUIs, tpDownScreenGui)
 
-    -- ==================== SPEED (Safest slow loop)
+    -- SPEED BUTTON
     local speedScreenGui = Instance.new("ScreenGui")
     speedScreenGui.Name = "BrSpeed"
     speedScreenGui.ResetOnSpawn = false
@@ -390,6 +522,7 @@ local function createMobileButtons()
     speedStroke.Thickness = 2
     speedStroke.Transparency = 0.5
     speedStroke.Parent = speedButton
+
     speedButton.Draggable = true
 
     local targetSpeed = 29
@@ -408,7 +541,9 @@ local function createMobileButtons()
         task.spawn(function()
             while hum and hum.Parent do
                 if hum.WalkSpeed ~= targetSpeed then
-                    pcall(function() hum.WalkSpeed = targetSpeed end)
+                    pcall(function()
+                        hum.WalkSpeed = targetSpeed
+                    end)
                 end
                 task.wait(math.random(2, 4))
             end
@@ -438,7 +573,6 @@ local function createMobileButtons()
             speedButton.TextColor3 = Color3.fromRGB(50, 200, 255)
             speedStroke.Color = Color3.fromRGB(50, 200, 255)
         end
-
         local char = Player.Character
         if char then
             local hum = char:FindFirstChild("Humanoid")
@@ -461,12 +595,15 @@ activateBtn.MouseButton1Click:Connect(function()
         activateBtn.Text = "Activate?"
         activateBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
         for _, gui in ipairs(mobileGUIs) do
-            pcall(function() gui:Destroy() end)
+            pcall(function()
+                gui:Destroy()
+            end)
         end
         mobileGUIs = {}
     end
 end)
 
+-- ===== INFINITE JUMP =====
 local function toggleInfiniteJump()
     infiniteJumpEnabled = not infiniteJumpEnabled
     if infiniteJumpEnabled then
@@ -492,13 +629,10 @@ local function toggleInfiniteJump()
     else
         infJumpBtn.Text = "Infinite Jump: OFF"
         infJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        if jumpConnection then
-            jumpConnection:Disconnect()
-            jumpConnection = nil
-        end
+        if jumpConnection then jumpConnection:Disconnect() jumpConnection = nil end
     end
 end
 
 infJumpBtn.MouseButton1Click:Connect(toggleInfiniteJump)
 
-print("✅ Jayson Hub - TP DOWN button added!")
+print("✅ Jayson Hub Loaded - Anti Ragdoll + 4.3s Auto Fly")
