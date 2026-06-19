@@ -1,0 +1,504 @@
+-- Jayson Hub - With TP DOWN Button
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local Player = Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+
+Player.CharacterAdded:Connect(function(char)
+    Character = char
+end)
+
+-- ==================== HUB GUI ====================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "JaysonHub"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = game:GetService("CoreGui")
+
+local HubButton = Instance.new("TextButton")
+HubButton.Size = UDim2.new(0, 50, 0, 50)
+HubButton.Position = UDim2.new(0, 20, 0, 100)
+HubButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+HubButton.Text = "J"
+HubButton.TextColor3 = Color3.fromRGB(0, 210, 255)
+HubButton.TextSize = 24
+HubButton.Font = Enum.Font.GothamBold
+HubButton.Draggable = true
+HubButton.Parent = ScreenGui
+
+local HubCorner = Instance.new("UICorner")
+HubCorner.CornerRadius = UDim.new(0, 12)
+HubCorner.Parent = HubButton
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 255, 0, 230)
+MainFrame.Position = UDim2.new(0.5, -127, 0.3, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 14)
+UICorner.Parent = MainFrame
+
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 14)
+TitleCorner.Parent = TitleBar
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, 0, 1, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Jayson Duels"
+TitleLabel.TextColor3 = Color3.fromRGB(0, 210, 255)
+TitleLabel.TextSize = 21
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.Parent = TitleBar
+
+local mobileBtn = Instance.new("TextButton")
+mobileBtn.Size = UDim2.new(0, 100, 0, 25)
+mobileBtn.Position = UDim2.new(1, -110, 0.12, 0)
+mobileBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+mobileBtn.Text = "Mobile Buttons"
+mobileBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+mobileBtn.TextSize = 11
+mobileBtn.Font = Enum.Font.GothamBold
+mobileBtn.Parent = MainFrame
+
+local mobileCorner = Instance.new("UICorner")
+mobileCorner.CornerRadius = UDim.new(0, 6)
+mobileCorner.Parent = mobileBtn
+
+local infJumpBtn = Instance.new("TextButton")
+infJumpBtn.Size = UDim2.new(0.84, 0, 0, 40)
+infJumpBtn.Position = UDim2.new(0.08, 0, 0.35, 0)
+infJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+infJumpBtn.Text = "Infinite Jump: OFF"
+infJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+infJumpBtn.TextSize = 16
+infJumpBtn.Font = Enum.Font.GothamBold
+infJumpBtn.Parent = MainFrame
+
+local infCorner = Instance.new("UICorner")
+infCorner.CornerRadius = UDim.new(0, 9)
+infCorner.Parent = infJumpBtn
+
+local mobileFrame = Instance.new("Frame")
+mobileFrame.Size = UDim2.new(1, 0, 0, 140)
+mobileFrame.Position = UDim2.new(0, 0, 0.4, 0)
+mobileFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mobileFrame.BorderSizePixel = 0
+mobileFrame.Visible = false
+mobileFrame.Parent = MainFrame
+
+local mobileUICorner = Instance.new("UICorner")
+mobileUICorner.CornerRadius = UDim.new(0, 10)
+mobileUICorner.Parent = mobileFrame
+
+local activateBtn = Instance.new("TextButton")
+activateBtn.Size = UDim2.new(0.7, 0, 0, 35)
+activateBtn.Position = UDim2.new(0.15, 0, 0.1, 0)
+activateBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+activateBtn.Text = "Activate?"
+activateBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+activateBtn.TextSize = 16
+activateBtn.Font = Enum.Font.GothamBold
+activateBtn.Parent = mobileFrame
+
+local activateCorner = Instance.new("UICorner")
+activateCorner.CornerRadius = UDim.new(0, 7)
+activateCorner.Parent = activateBtn
+
+-- ==================== LOGIC ====================
+local infiniteJumpEnabled = false
+local jumpConnection = nil
+local mobileButtonsActive = false
+local mobileGUIs = {}
+
+HubButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+mobileBtn.MouseButton1Click:Connect(function()
+    mobileFrame.Visible = not mobileFrame.Visible
+    if mobileFrame.Visible then
+        infJumpBtn.Visible = false
+    else
+        infJumpBtn.Visible = true
+    end
+end)
+
+local function createMobileButtons()
+    -- DROP BR
+    local dropScreenGui = Instance.new("ScreenGui")
+    dropScreenGui.Name = "DropBR"
+    dropScreenGui.ResetOnSpawn = false
+    dropScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+    local dropCircle = Instance.new("Frame")
+    dropCircle.Size = UDim2.new(0, 55, 0, 55)
+    dropCircle.Position = UDim2.new(0.82, -27, 0.55, 0)
+    dropCircle.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    dropCircle.BorderSizePixel = 0
+    dropCircle.Active = true
+    dropCircle.Draggable = true
+    dropCircle.Parent = dropScreenGui
+    Instance.new("UICorner", dropCircle).CornerRadius = UDim.new(1, 0)
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = "DROP\nBR"
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.TextSize = 14
+    textLabel.TextColor3 = Color3.fromRGB(170, 0, 255)
+    textLabel.Parent = dropCircle
+
+    local function jumpDrop()
+        local char = Player.Character
+        if not char then return end
+        local rootPart = char:FindFirstChild("HumanoidRootPart")
+        if not rootPart then return end
+        rootPart.Velocity = Vector3.new(rootPart.Velocity.X, 135, rootPart.Velocity.Z)
+        task.wait(0.13)
+        rootPart.Velocity = Vector3.new(rootPart.Velocity.X, -75, rootPart.Velocity.Z)
+    end
+
+    dropCircle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            jumpDrop()
+        end
+    end)
+    table.insert(mobileGUIs, dropScreenGui)
+
+    -- FLY + FLY CARRY
+    local flyScreenGui = Instance.new("ScreenGui")
+    flyScreenGui.Name = "FlyCircles"
+    flyScreenGui.ResetOnSpawn = false
+    flyScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+    local flyCircle = Instance.new("Frame")
+    flyCircle.Size = UDim2.new(0, 55, 0, 55)
+    flyCircle.Position = UDim2.new(0.82, -60, 0.38, 0)
+    flyCircle.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    flyCircle.BorderSizePixel = 0
+    flyCircle.Active = true
+    flyCircle.Draggable = true
+    flyCircle.Parent = flyScreenGui
+    Instance.new("UICorner", flyCircle).CornerRadius = UDim.new(1, 0)
+
+    local flyText = Instance.new("TextLabel")
+    flyText.Size = UDim2.new(1, 0, 1, 0)
+    flyText.BackgroundTransparency = 1
+    flyText.Text = "FLY"
+    flyText.Font = Enum.Font.GothamBold
+    flyText.TextSize = 17
+    flyText.TextColor3 = Color3.fromRGB(170, 0, 255)
+    flyText.Parent = flyCircle
+
+    local carryCircle = Instance.new("Frame")
+    carryCircle.Size = UDim2.new(0, 55, 0, 55)
+    carryCircle.Position = UDim2.new(0.82, 5, 0.38, 0)
+    carryCircle.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    carryCircle.BorderSizePixel = 0
+    carryCircle.Active = true
+    carryCircle.Draggable = true
+    carryCircle.Parent = flyScreenGui
+    Instance.new("UICorner", carryCircle).CornerRadius = UDim.new(1, 0)
+
+    local carryText = Instance.new("TextLabel")
+    carryText.Size = UDim2.new(1, 0, 1, 0)
+    carryText.BackgroundTransparency = 1
+    carryText.Text = "FLY\nCARRY"
+    carryText.Font = Enum.Font.GothamBold
+    carryText.TextSize = 13
+    carryText.TextColor3 = Color3.fromRGB(170, 0, 255)
+    carryText.Parent = carryCircle
+
+    local flying = false
+    local currentSpeed = 50
+    local verticalSpeed = 35
+    local camera = workspace.CurrentCamera
+    local humanoid = nil
+    local rootPart = nil
+
+    local function setupFlyChar(char)
+        humanoid = char:FindFirstChild("Humanoid")
+        rootPart = char:FindFirstChild("HumanoidRootPart")
+    end
+    Player.CharacterAdded:Connect(setupFlyChar)
+    if Character then setupFlyChar(Character) end
+
+    RunService.Stepped:Connect(function()
+        if not flying or not rootPart or not rootPart.Parent then return end
+
+        local pressingW = UserInputService:IsKeyDown(Enum.KeyCode.W)
+        local pressingA = UserInputService:IsKeyDown(Enum.KeyCode.A)
+        local pressingS = UserInputService:IsKeyDown(Enum.KeyCode.S)
+        local pressingD = UserInputService:IsKeyDown(Enum.KeyCode.D)
+        local pressingSpace = UserInputService:IsKeyDown(Enum.KeyCode.Space)
+        local pressingCtrl = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
+
+        if not (pressingW or pressingA or pressingS or pressingD or pressingSpace or pressingCtrl) then
+            rootPart.Velocity = Vector3.new(0, 0, 0)
+        else
+            local dir = Vector3.new(0, 0, 0)
+            if pressingW then dir = dir + camera.CFrame.LookVector end
+            if pressingS then dir = dir - camera.CFrame.LookVector end
+            if pressingA then dir = dir - camera.CFrame.RightVector end
+            if pressingD then dir = dir + camera.CFrame.RightVector end
+            if dir.Magnitude > 0 then dir = dir.Unit end
+
+            local vertical = 0
+            if pressingSpace then vertical = verticalSpeed end
+            if pressingCtrl then vertical = -verticalSpeed end
+
+            rootPart.Velocity = (dir * currentSpeed) + Vector3.new(0, vertical, 0)
+        end
+    end)
+
+    local function toggleFly(mode)
+        if mode == "normal" then
+            if flying and currentSpeed == 50 then
+                flying = false
+                currentSpeed = 50
+                flyText.Text = "FLY"
+                flyText.TextColor3 = Color3.fromRGB(170, 0, 255)
+                if rootPart then rootPart.Velocity = Vector3.new(0, 0, 0) end
+            else
+                flying = true
+                currentSpeed = 50
+                flyText.Text = "ON"
+                flyText.TextColor3 = Color3.fromRGB(0, 255, 100)
+                carryText.Text = "FLY\nCARRY"
+                carryText.TextColor3 = Color3.fromRGB(170, 0, 255)
+            end
+        elseif mode == "carry" then
+            if flying and currentSpeed == 29 then
+                flying = false
+                currentSpeed = 29
+                carryText.Text = "FLY\nCARRY"
+                carryText.TextColor3 = Color3.fromRGB(170, 0, 255)
+                if rootPart then rootPart.Velocity = Vector3.new(0, 0, 0) end
+            else
+                flying = true
+                currentSpeed = 29
+                carryText.Text = "ON"
+                carryText.TextColor3 = Color3.fromRGB(0, 255, 100)
+                flyText.Text = "FLY"
+                flyText.TextColor3 = Color3.fromRGB(170, 0, 255)
+            end
+        end
+    end
+
+    flyCircle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            toggleFly("normal")
+        end
+    end)
+
+    carryCircle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            toggleFly("carry")
+        end
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.F then
+            toggleFly("normal")
+        end
+    end)
+
+    table.insert(mobileGUIs, flyScreenGui)
+
+    -- ==================== TP DOWN BUTTON (NEW) ====================
+    local tpDownScreenGui = Instance.new("ScreenGui")
+    tpDownScreenGui.Name = "TPDown"
+    tpDownScreenGui.ResetOnSpawn = false
+    tpDownScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+    local tpDownCircle = Instance.new("Frame")
+    tpDownCircle.Size = UDim2.new(0, 55, 0, 55)
+    tpDownCircle.Position = UDim2.new(0.82, -27, 0.72, 0) -- Below other buttons
+    tpDownCircle.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    tpDownCircle.BorderSizePixel = 0
+    tpDownCircle.Active = true
+    tpDownCircle.Draggable = true
+    tpDownCircle.Parent = tpDownScreenGui
+    Instance.new("UICorner", tpDownCircle).CornerRadius = UDim.new(1, 0)
+
+    local tpDownText = Instance.new("TextLabel")
+    tpDownText.Size = UDim2.new(1, 0, 1, 0)
+    tpDownText.BackgroundTransparency = 1
+    tpDownText.Text = "TP\nDOWN"
+    tpDownText.Font = Enum.Font.GothamBold
+    tpDownText.TextSize = 13
+    tpDownText.TextColor3 = Color3.fromRGB(255, 80, 80)
+    tpDownText.Parent = tpDownCircle
+
+    tpDownCircle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local char = Player.Character
+            if char then
+                local rootPart = char:FindFirstChild("HumanoidRootPart")
+                if rootPart then
+                    -- Fly down really fast
+                    rootPart.Velocity = Vector3.new(rootPart.Velocity.X, -200, rootPart.Velocity.Z)
+                end
+            end
+        end
+    end)
+
+    table.insert(mobileGUIs, tpDownScreenGui)
+
+    -- ==================== SPEED (Safest slow loop)
+    local speedScreenGui = Instance.new("ScreenGui")
+    speedScreenGui.Name = "BrSpeed"
+    speedScreenGui.ResetOnSpawn = false
+    speedScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+    local speedButton = Instance.new("TextButton")
+    speedButton.Size = UDim2.new(0, 62, 0, 62)
+    speedButton.Position = UDim2.new(0.93, -78, 0.52, -31)
+    speedButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    speedButton.BackgroundTransparency = 0.1
+    speedButton.Text = "29"
+    speedButton.TextColor3 = Color3.fromRGB(50, 200, 255)
+    speedButton.TextScaled = true
+    speedButton.Font = Enum.Font.SourceSansBold
+    speedButton.TextStrokeTransparency = 0.3
+    speedButton.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    speedButton.Parent = speedScreenGui
+
+    local speedCorner = Instance.new("UICorner")
+    speedCorner.CornerRadius = UDim.new(0.5, 0)
+    speedCorner.Parent = speedButton
+
+    local speedStroke = Instance.new("UIStroke")
+    speedStroke.Color = Color3.fromRGB(50, 200, 255)
+    speedStroke.Thickness = 2
+    speedStroke.Transparency = 0.5
+    speedStroke.Parent = speedButton
+    speedButton.Draggable = true
+
+    local targetSpeed = 29
+
+    local function applySpeed(hum)
+        if hum and hum.Parent then
+            pcall(function()
+                if hum.WalkSpeed ~= targetSpeed then
+                    hum.WalkSpeed = targetSpeed
+                end
+            end)
+        end
+    end
+
+    local function startSlowSpeedLoop(hum)
+        task.spawn(function()
+            while hum and hum.Parent do
+                if hum.WalkSpeed ~= targetSpeed then
+                    pcall(function() hum.WalkSpeed = targetSpeed end)
+                end
+                task.wait(math.random(2, 4))
+            end
+        end)
+    end
+
+    local function onCharacter(char)
+        local hum = char:WaitForChild("Humanoid", 10)
+        if hum then
+            applySpeed(hum)
+            startSlowSpeedLoop(hum)
+        end
+    end
+
+    if Character then onCharacter(Character) end
+    Player.CharacterAdded:Connect(onCharacter)
+
+    speedButton.MouseButton1Click:Connect(function()
+        if targetSpeed == 29 then
+            targetSpeed = 50
+            speedButton.Text = "50"
+            speedButton.TextColor3 = Color3.fromRGB(255, 20, 147)
+            speedStroke.Color = Color3.fromRGB(255, 20, 147)
+        else
+            targetSpeed = 29
+            speedButton.Text = "29"
+            speedButton.TextColor3 = Color3.fromRGB(50, 200, 255)
+            speedStroke.Color = Color3.fromRGB(50, 200, 255)
+        end
+
+        local char = Player.Character
+        if char then
+            local hum = char:FindFirstChild("Humanoid")
+            if hum then
+                applySpeed(hum)
+            end
+        end
+    end)
+
+    table.insert(mobileGUIs, speedScreenGui)
+end
+
+activateBtn.MouseButton1Click:Connect(function()
+    mobileButtonsActive = not mobileButtonsActive
+    if mobileButtonsActive then
+        activateBtn.Text = "Active"
+        activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+        createMobileButtons()
+    else
+        activateBtn.Text = "Activate?"
+        activateBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        for _, gui in ipairs(mobileGUIs) do
+            pcall(function() gui:Destroy() end)
+        end
+        mobileGUIs = {}
+    end
+end)
+
+local function toggleInfiniteJump()
+    infiniteJumpEnabled = not infiniteJumpEnabled
+    if infiniteJumpEnabled then
+        infJumpBtn.Text = "Infinite Jump: ON"
+        infJumpBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+        if jumpConnection then jumpConnection:Disconnect() end
+        jumpConnection = RunService.Heartbeat:Connect(function()
+            if not infiniteJumpEnabled then return end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                pcall(function()
+                    if Character and Character:FindFirstChild("HumanoidRootPart") then
+                        local hrp = Character.HumanoidRootPart
+                        local hum = Character:FindFirstChild("Humanoid")
+                        if hum and hum:GetState() ~= Enum.HumanoidStateType.Dead then
+                            if hrp.Velocity.Y < 5 then
+                                hrp.Velocity = Vector3.new(hrp.Velocity.X, math.max(hrp.Velocity.Y + 25, 55), hrp.Velocity.Z)
+                            end
+                        end
+                    end
+                end)
+            end
+        end)
+    else
+        infJumpBtn.Text = "Infinite Jump: OFF"
+        infJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        if jumpConnection then
+            jumpConnection:Disconnect()
+            jumpConnection = nil
+        end
+    end
+end
+
+infJumpBtn.MouseButton1Click:Connect(toggleInfiniteJump)
+
+print("✅ Jayson Hub - TP DOWN button added!")
