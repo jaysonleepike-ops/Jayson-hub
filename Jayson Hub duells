@@ -966,7 +966,17 @@ local function saveConfig()
 
     end
 
-    local config = {antiRagdollEnabled = antiRagdollEnabled, infiniteJumpEnabled = infiniteJumpEnabled, mobileButtonsActive = mobileButtonsActive, autoBatEnabled = autoBatEnabled, jukeEnabled = jukeEnabled, fpsBoosterEnabled = fpsBoosterEnabled, positions = positions}
+    local config = {
+        antiRagdollEnabled = antiRagdollEnabled,
+        infiniteJumpEnabled = infiniteJumpEnabled,
+        mobileButtonsActive = mobileButtonsActive,
+        autoBatEnabled = autoBatEnabled,
+        jukeEnabled = jukeEnabled,
+        fpsBoosterEnabled = fpsBoosterEnabled,
+        autoLeftEnabled = autoLeftEnabled,
+        autoRightEnabled = autoRightEnabled,
+        positions = positions
+    }
 
     pcall(function() writefile(getConfigPath(), HttpService:JSONEncode(config)) end)
 
@@ -1164,6 +1174,18 @@ local function createMobileButtons()
 
     end)
 
+    -- Initialize saved state for new Auto Left/Right circles (so they show ON if loaded from config)
+    if autoLeftEnabled and UI_Elements.AutoLeftCircle then
+        local lbl = UI_Elements.AutoLeftCircle:FindFirstChildOfClass("TextLabel")
+        if lbl then lbl.Text = "LEFT\nON"; lbl.TextColor3 = Color3.fromRGB(0, 255, 100) end
+        UI_Elements.AutoLeftCircle.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+    end
+    if autoRightEnabled and UI_Elements.AutoRightCircle then
+        local lbl = UI_Elements.AutoRightCircle:FindFirstChildOfClass("TextLabel")
+        if lbl then lbl.Text = "RIGHT\nON"; lbl.TextColor3 = Color3.fromRGB(0, 255, 100) end
+        UI_Elements.AutoRightCircle.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+    end
+
 end
 
 
@@ -1250,7 +1272,7 @@ task.spawn(function()
 
     local path = getConfigPath() if not isfile(path) then return end
 
-    local success, config = pcall(function() return HttpService:JSONEncode(readfile(path)) end)
+    local success, config = pcall(function() return HttpService:JSONDecode(readfile(path)) end)
 
     if success and config then
 
@@ -1270,7 +1292,19 @@ task.spawn(function()
 
         if config.fpsBoosterEnabled then setFPSBooster(true) end
 
-        if config.mobileButtonsActive then mobileButtonsActive = true activateBtn.Text = "Disactivate?" activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90) createMobileButtons() end
+        if config.autoLeftEnabled then autoLeftEnabled = true end
+        if config.autoRightEnabled then autoRightEnabled = true end
+
+        if config.mobileButtonsActive then 
+            mobileButtonsActive = true 
+            activateBtn.Text = "Disactivate?" 
+            activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90) 
+            createMobileButtons() 
+        end
+
+        -- Start patrols if they were saved as enabled (after circles are created)
+        if autoLeftEnabled then startPatrol("left") end
+        if autoRightEnabled then startPatrol("right") end
 
     end
 
