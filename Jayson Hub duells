@@ -3,21 +3,19 @@ local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
-
 local LocalPlayer = Players.LocalPlayer
 local Player = LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
-
 Player.CharacterAdded:Connect(function(char)
     Character = char
 end)
 
--- ================== SPLASH SCREEN (KLEINER & ZENTRIERT) ==================
+-- ================== SPLASH SCREEN ==================
 local SplashGui = Instance.new("ScreenGui")
 SplashGui.Name = "JaysonDuells_SplashScreen"
 SplashGui.ResetOnSpawn = false
 SplashGui.DisplayOrder = 999
-SplashGui.IgnoreGuiInset = true 
+SplashGui.IgnoreGuiInset = true
 SplashGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local backgroundFrame = Instance.new("Frame")
@@ -28,18 +26,17 @@ backgroundFrame.Parent = SplashGui
 
 local imageLabel = Instance.new("ImageLabel")
 imageLabel.Name = "SplashImage"
-imageLabel.Size = UDim2.new(0.7, 0, 0.7, 0) 
-imageLabel.Position = UDim2.new(0.15, 0, 0.15, 0) 
+imageLabel.Size = UDim2.new(0.7, 0, 0.7, 0)
+imageLabel.Position = UDim2.new(0.15, 0, 0.15, 0)
 imageLabel.BackgroundTransparency = 1
 imageLabel.Image = "rbxthumb://type=Asset&id=110847858067326&w=768&h=432"
-imageLabel.ScaleType = Enum.ScaleType.Fit 
+imageLabel.ScaleType = Enum.ScaleType.Fit
 imageLabel.Parent = backgroundFrame
 
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0, 12)
 uiCorner.Parent = imageLabel
 
--- Music
 task.spawn(function()
     local bgMusic = Instance.new("Sound")
     bgMusic.Name = "CoolHubMusic"
@@ -47,12 +44,10 @@ task.spawn(function()
     bgMusic.Volume = 0.6
     bgMusic.Looped = true
     bgMusic.Parent = SoundService
-
-    if not bgMusic.IsLoaded then 
-        pcall(function() bgMusic.Loaded:Wait() end) 
+    if not bgMusic.IsLoaded then
+        pcall(function() bgMusic.Loaded:Wait() end)
     end
     bgMusic:Play()
-
     task.delay(10, function()
         if bgMusic and bgMusic.IsPlaying then bgMusic:Stop() end
     end)
@@ -60,7 +55,7 @@ end)
 
 task.wait(3)
 SplashGui:Destroy()
-print("🔥 Jayson Duells Splash loaded!")
+print("Jayson Duells Splash loaded!")
 
 -- ==================== HUB GUI ====================
 local ScreenGui = Instance.new("ScreenGui")
@@ -85,8 +80,8 @@ HubCorner.Parent = HubButton
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 255, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -127, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 255, 0, 370)
+MainFrame.Position = UDim2.new(0.5, -127, 0.28, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -118,7 +113,7 @@ TitleLabel.Parent = TitleBar
 
 local mobileBtn = Instance.new("TextButton")
 mobileBtn.Size = UDim2.new(0, 100, 0, 25)
-mobileBtn.Position = UDim2.new(1, -110, 0.12, 0)
+mobileBtn.Position = UDim2.new(1, -110, 0.115, 0)
 mobileBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 mobileBtn.Text = "Mobile Buttons"
 mobileBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -130,9 +125,23 @@ local mobileCorner = Instance.new("UICorner")
 mobileCorner.CornerRadius = UDim.new(0, 6)
 mobileCorner.Parent = mobileBtn
 
+local settingsBtn = Instance.new("TextButton")
+settingsBtn.Size = UDim2.new(0, 80, 0, 25)
+settingsBtn.Position = UDim2.new(0, 10, 0.115, 0)
+settingsBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 180)
+settingsBtn.Text = "Settings"
+settingsBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+settingsBtn.TextSize = 11
+settingsBtn.Font = Enum.Font.GothamBold
+settingsBtn.Parent = MainFrame
+
+local settingsBtnCorner = Instance.new("UICorner")
+settingsBtnCorner.CornerRadius = UDim.new(0, 6)
+settingsBtnCorner.Parent = settingsBtn
+
 local infJumpBtn = Instance.new("TextButton")
 infJumpBtn.Size = UDim2.new(0.84, 0, 0, 35)
-infJumpBtn.Position = UDim2.new(0.08, 0, 0.25, 0)
+infJumpBtn.Position = UDim2.new(0.08, 0, 0.22, 0)
 infJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 infJumpBtn.Text = "Infinite Jump: OFF"
 infJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -146,7 +155,7 @@ infCorner.Parent = infJumpBtn
 
 local antiRagdollBtn = Instance.new("TextButton")
 antiRagdollBtn.Size = UDim2.new(0.84, 0, 0, 35)
-antiRagdollBtn.Position = UDim2.new(0.08, 0, 0.40, 0)
+antiRagdollBtn.Position = UDim2.new(0.08, 0, 0.35, 0)
 antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 antiRagdollBtn.Text = "Anti Ragdoll: OFF"
 antiRagdollBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -160,7 +169,7 @@ antiRagdollCorner.Parent = antiRagdollBtn
 
 local jukeBtn = Instance.new("TextButton")
 jukeBtn.Size = UDim2.new(0.84, 0, 0, 35)
-jukeBtn.Position = UDim2.new(0.08, 0, 0.55, 0)
+jukeBtn.Position = UDim2.new(0.08, 0, 0.48, 0)
 jukeBtn.BackgroundColor3 = Color3.fromRGB(75, 0, 130)
 jukeBtn.Text = "Juke: OFF"
 jukeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -174,7 +183,7 @@ jukeCorner.Parent = jukeBtn
 
 local fpsBoosterBtn = Instance.new("TextButton")
 fpsBoosterBtn.Size = UDim2.new(0.84, 0, 0, 35)
-fpsBoosterBtn.Position = UDim2.new(0.08, 0, 0.70, 0)
+fpsBoosterBtn.Position = UDim2.new(0.08, 0, 0.61, 0)
 fpsBoosterBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 fpsBoosterBtn.Text = "FPS BOOSTER: OFF"
 fpsBoosterBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -188,9 +197,9 @@ fpsCorner.Parent = fpsBoosterBtn
 
 local saveConfigBtn = Instance.new("TextButton")
 saveConfigBtn.Size = UDim2.new(0.84, 0, 0, 35)
-saveConfigBtn.Position = UDim2.new(0.08, 0, 0.84, 0)
+saveConfigBtn.Position = UDim2.new(0.08, 0, 0.74, 0)
 saveConfigBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-saveConfigBtn.Text = "💾 Save Config"
+saveConfigBtn.Text = "Save Config"
 saveConfigBtn.TextColor3 = Color3.fromRGB(0, 210, 255)
 saveConfigBtn.TextSize = 14
 saveConfigBtn.Font = Enum.Font.GothamBold
@@ -199,6 +208,8 @@ saveConfigBtn.Parent = MainFrame
 local saveCorner = Instance.new("UICorner")
 saveCorner.CornerRadius = UDim.new(0, 9)
 saveCorner.Parent = saveConfigBtn
+
+local hubButtons = {infJumpBtn, antiRagdollBtn, jukeBtn, fpsBoosterBtn, saveConfigBtn}
 
 local mobileFrame = Instance.new("Frame")
 mobileFrame.Size = UDim2.new(1, 0, 0, 140)
@@ -226,6 +237,82 @@ local activateCorner = Instance.new("UICorner")
 activateCorner.CornerRadius = UDim.new(0, 7)
 activateCorner.Parent = activateBtn
 
+-- Settings page
+local settingsFrame = Instance.new("Frame")
+settingsFrame.Name = "SettingsFrame"
+settingsFrame.Size = UDim2.new(1, -16, 1, -78)
+settingsFrame.Position = UDim2.new(0, 8, 0, 70)
+settingsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+settingsFrame.BorderSizePixel = 0
+settingsFrame.Visible = false
+settingsFrame.Parent = MainFrame
+
+local settingsFrameCorner = Instance.new("UICorner")
+settingsFrameCorner.CornerRadius = UDim.new(0, 10)
+settingsFrameCorner.Parent = settingsFrame
+
+local settingsTitle = Instance.new("TextLabel")
+settingsTitle.Size = UDim2.new(1, 0, 0, 28)
+settingsTitle.BackgroundTransparency = 1
+settingsTitle.Text = "Settings"
+settingsTitle.TextColor3 = Color3.fromRGB(0, 210, 255)
+settingsTitle.TextSize = 16
+settingsTitle.Font = Enum.Font.GothamBold
+settingsTitle.Parent = settingsFrame
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, -16, 0, 22)
+speedLabel.Position = UDim2.new(0, 8, 0, 40)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "Speed Changer"
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.TextSize = 14
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = settingsFrame
+
+local speedBox = Instance.new("TextBox")
+speedBox.Size = UDim2.new(1, -16, 0, 34)
+speedBox.Position = UDim2.new(0, 8, 0, 66)
+speedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedBox.Text = "50"
+speedBox.PlaceholderText = "Type a number"
+speedBox.TextColor3 = Color3.fromRGB(0, 210, 255)
+speedBox.PlaceholderColor3 = Color3.fromRGB(140, 140, 140)
+speedBox.TextSize = 16
+speedBox.Font = Enum.Font.GothamBold
+speedBox.ClearTextOnFocus = false
+speedBox.Parent = settingsFrame
+
+local speedBoxCorner = Instance.new("UICorner")
+speedBoxCorner.CornerRadius = UDim.new(0, 8)
+speedBoxCorner.Parent = speedBox
+
+local speedHint = Instance.new("TextLabel")
+speedHint.Size = UDim2.new(1, -16, 0, 36)
+speedHint.Position = UDim2.new(0, 8, 0, 106)
+speedHint.BackgroundTransparency = 1
+speedHint.Text = "Steal Speed button uses this number. Click again for normal speed."
+speedHint.TextColor3 = Color3.fromRGB(170, 170, 170)
+speedHint.TextSize = 11
+speedHint.Font = Enum.Font.Gotham
+speedHint.TextWrapped = true
+speedHint.Parent = settingsFrame
+
+local backBtn = Instance.new("TextButton")
+backBtn.Size = UDim2.new(1, -16, 0, 32)
+backBtn.Position = UDim2.new(0, 8, 1, -42)
+backBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+backBtn.Text = "Back"
+backBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+backBtn.TextSize = 14
+backBtn.Font = Enum.Font.GothamBold
+backBtn.Parent = settingsFrame
+
+local backCorner = Instance.new("UICorner")
+backCorner.CornerRadius = UDim.new(0, 8)
+backCorner.Parent = backBtn
+
 -- ==================== LOGIC ====================
 local infiniteJumpEnabled = false
 local jumpConnection = nil
@@ -235,6 +322,10 @@ local jukeEnabled = false
 local fpsBoosterEnabled = false
 local mobileGUIs = {}
 local savedPositions = {}
+local stealSpeedEnabled = false
+local customSpeed = 50
+local normalSpeed = 16
+local settingsOpen = false
 
 local rightWaypoints = {
     Vector3.new(-473.04, -6.99, 29.71),
@@ -248,7 +339,6 @@ local leftWaypoints = {
     Vector3.new(-475.08, -7.00, 93.29),
     Vector3.new(-474.22, -6.96, 16.18),
 }
-
 local patrolMode = "none"
 local currentWaypoint = 1
 local patrolConnection = nil
@@ -266,7 +356,8 @@ local UI_Elements = {
     AutoBatCircle = nil,
     JukeCircle = nil,
     AutoLeftCircle = nil,
-    AutoRightCircle = nil
+    AutoRightCircle = nil,
+    StealSpeedCircle = nil
 }
 
 local function MakeElementDraggable(guiObject)
@@ -276,11 +367,15 @@ local function MakeElementDraggable(guiObject)
             dragging = true
             dragStart = input.Position
             startPos = guiObject.Position
-            input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
         end
     end)
     guiObject.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
@@ -293,7 +388,84 @@ end
 MakeElementDraggable(HubButton)
 MakeElementDraggable(MainFrame)
 
--- ===== DIRECT VELOCITY FLY & TARGET SYSTEM =====
+local function readSpeedBox()
+    local n = tonumber(speedBox.Text)
+    if n and n > 0 then
+        customSpeed = math.clamp(n, 1, 500)
+        speedBox.Text = tostring(customSpeed)
+    else
+        speedBox.Text = tostring(customSpeed)
+    end
+end
+
+speedBox.FocusLost:Connect(function()
+    readSpeedBox()
+    task.delay(0.1, function()
+        if saveConfig then saveConfig() end
+    end)
+end)
+
+local function applyWalkSpeed()
+    local char = Player.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    if stealSpeedEnabled then
+        if hum.WalkSpeed ~= customSpeed then
+            hum.WalkSpeed = customSpeed
+        end
+    end
+end
+
+local function updateStealSpeedUI()
+    if UI_Elements.StealSpeedCircle then
+        local lbl = UI_Elements.StealSpeedCircle:FindFirstChildOfClass("TextLabel")
+        if lbl then
+            if stealSpeedEnabled then
+                lbl.Text = "SPEED\nON"
+                lbl.TextColor3 = Color3.fromRGB(0, 255, 100)
+            else
+                lbl.Text = "STEAL\nSPEED"
+                lbl.TextColor3 = Color3.fromRGB(0, 210, 255)
+            end
+        end
+        UI_Elements.StealSpeedCircle.BackgroundColor3 = stealSpeedEnabled and Color3.fromRGB(60, 200, 90) or Color3.fromRGB(12, 12, 12)
+    end
+end
+
+local function setStealSpeed(state)
+    stealSpeedEnabled = state
+    local char = Player.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if stealSpeedEnabled then
+            if hum.WalkSpeed > 0 and hum.WalkSpeed < 1000 then
+                normalSpeed = hum.WalkSpeed
+            end
+            hum.WalkSpeed = customSpeed
+        else
+            hum.WalkSpeed = normalSpeed
+        end
+    end
+    updateStealSpeedUI()
+end
+
+RunService.Heartbeat:Connect(function()
+    if stealSpeedEnabled then
+        applyWalkSpeed()
+    end
+end)
+
+Player.CharacterAdded:Connect(function(char)
+    Character = char
+    task.wait(0.3)
+    if stealSpeedEnabled then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then hum.WalkSpeed = customSpeed end
+    end
+end)
+
+-- ===== FLY =====
 local flying, currentSpeed, verticalSpeed = false, 50, 18
 local camera = workspace.CurrentCamera
 local humanoid, rootPart, flySteppedConnection
@@ -313,7 +485,10 @@ local function getClosestPlayer()
         if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character:FindFirstChildOfClass("Humanoid") then
             if p.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
                 local dist = (p.Character.HumanoidRootPart.Position - myRoot.Position).Magnitude
-                if dist < shortestDistance then shortestDistance = dist; closestTarget = p.Character end
+                if dist < shortestDistance then
+                    shortestDistance = dist
+                    closestTarget = p.Character
+                end
             end
         end
     end
@@ -324,19 +499,15 @@ local function startFly()
     if not rootPart or not rootPart.Parent then return end
     flying = true
     if flySteppedConnection then flySteppedConnection:Disconnect() end
-   
     flySteppedConnection = RunService.Stepped:Connect(function()
         if not flying or not rootPart or not rootPart.Parent then return end
-       
         if autoBatEnabled then
             local target = getClosestPlayer()
             if target and target:FindFirstChild("HumanoidRootPart") then
                 local targetRoot = target.HumanoidRootPart
                 local distance = (targetRoot.Position - rootPart.Position).Magnitude
-               
                 local bat = Player.Backpack:FindFirstChild("Bat") or Character:FindFirstChild("Bat")
                 if bat and bat.Parent == Player.Backpack then bat.Parent = Character end
-               
                 if distance > 4.0 then
                     local direction = (targetRoot.Position - rootPart.Position).Unit
                     rootPart.Velocity = direction * 45
@@ -349,14 +520,12 @@ local function startFly()
             end
             return
         end
-
         local W = UserInputService:IsKeyDown(Enum.KeyCode.W)
         local A = UserInputService:IsKeyDown(Enum.KeyCode.A)
         local S = UserInputService:IsKeyDown(Enum.KeyCode.S)
         local D = UserInputService:IsKeyDown(Enum.KeyCode.D)
         local Space = UserInputService:IsKeyDown(Enum.KeyCode.Space)
         local Ctrl = UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
-       
         if not (W or A or S or D or Space or Ctrl) then
             rootPart.Velocity = Vector3.new(0, 0, 0)
         else
@@ -382,16 +551,12 @@ end
 
 -- ===== JUKE =====
 local function updateJukeUI(state)
-    local labelText = state and "Juke: ON" or "Juke: OFF"
-    local bgColor = state and Color3.fromRGB(60, 200, 90) or Color3.fromRGB(75, 0, 130)
-   
-    jukeBtn.Text = labelText
-    jukeBtn.BackgroundColor3 = bgColor
-   
+    jukeBtn.Text = state and "Juke: ON" or "Juke: OFF"
+    jukeBtn.BackgroundColor3 = state and Color3.fromRGB(60, 200, 90) or Color3.fromRGB(75, 0, 130)
     if UI_Elements.JukeCircle then
         local mobileLabel = UI_Elements.JukeCircle:FindFirstChildOfClass("TextLabel")
         if mobileLabel then
-            mobileLabel.Text = state and "JUKE\nON" or "⚡\nJUKE"
+            mobileLabel.Text = state and "JUKE\nON" or "JUKE"
             mobileLabel.TextColor3 = state and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(170, 0, 255)
         end
     end
@@ -400,14 +565,12 @@ end
 local function toggleJuke()
     jukeEnabled = not jukeEnabled
     updateJukeUI(jukeEnabled)
-   
     if jukeEnabled then
         task.spawn(function()
             while jukeEnabled do
                 if not Character then task.wait(0.1) continue end
                 local hrp = Character:FindFirstChild("HumanoidRootPart")
                 local hum = Character:FindFirstChildOfClass("Humanoid")
-               
                 if hrp and hum and hum.Health > 0 then
                     for i = 1, 3 do
                         if not jukeEnabled or not hrp or hum.Health <= 0 then break end
@@ -424,7 +587,6 @@ local function toggleJuke()
         end)
     end
 end
-
 jukeBtn.MouseButton1Click:Connect(toggleJuke)
 
 -- ===== FPS BOOSTER =====
@@ -432,12 +594,10 @@ local function setFPSBooster(state)
     fpsBoosterEnabled = state
     fpsBoosterBtn.Text = state and "FPS BOOSTER: ON" or "FPS BOOSTER: OFF"
     fpsBoosterBtn.BackgroundColor3 = state and Color3.fromRGB(60, 200, 90) or Color3.fromRGB(40, 40, 40)
-   
     local lighting = game:GetService("Lighting")
     if state then
         lighting.GlobalShadows = false
         lighting.CastShadows = false
-       
         for _, v in pairs(game:GetDescendants()) do
             if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Explosion") then
                 v.Enabled = false
@@ -457,7 +617,6 @@ local function setFPSBooster(state)
         end
     end
 end
-
 fpsBoosterBtn.MouseButton1Click:Connect(function()
     setFPSBooster(not fpsBoosterEnabled)
     task.delay(0.1, saveConfig)
@@ -476,7 +635,10 @@ local function setupAntiRagdoll()
         if newState == Enum.HumanoidStateType.Ragdoll or newState == Enum.HumanoidStateType.FallingDown or newState == Enum.HumanoidStateType.Physics then
             if not flying then startFly() end
             if autoStopTask then task.cancel(autoStopTask) end
-            autoStopTask = task.delay(3.5, function() if flying and not autoBatEnabled then stopFly() end autoStopTask = nil end)
+            autoStopTask = task.delay(3.5, function()
+                if flying and not autoBatEnabled then stopFly() end
+                autoStopTask = nil
+            end)
         end
     end)
 end
@@ -489,13 +651,14 @@ local function TableToUDim2(t) if not t then return nil end return UDim2.new(t[1
 
 local function saveConfig()
     if not isfolder(configFolder) then makefolder(configFolder) end
+    readSpeedBox()
     local positions = {}
     for key, instance in pairs(UI_Elements) do
-        if instance and instance.Parent then 
-            positions[key] = UDim2ToTable(instance.Position) 
-            savedPositions[key] = positions[key] 
-        elseif savedPositions[key] then 
-            positions[key] = savedPositions[key] 
+        if instance and instance.Parent then
+            positions[key] = UDim2ToTable(instance.Position)
+            savedPositions[key] = positions[key]
+        elseif savedPositions[key] then
+            positions[key] = savedPositions[key]
         end
     end
     local config = {
@@ -507,6 +670,9 @@ local function saveConfig()
         fpsBoosterEnabled = fpsBoosterEnabled,
         autoLeftEnabled = autoLeftEnabled,
         autoRightEnabled = autoRightEnabled,
+        stealSpeedEnabled = stealSpeedEnabled,
+        customSpeed = customSpeed,
+        normalSpeed = normalSpeed,
         positions = positions
     }
     pcall(function() writefile(getConfigPath(), HttpService:JSONEncode(config)) end)
@@ -515,20 +681,39 @@ end
 -- ==================== MOBILE BUTTONS ====================
 local function createMobileButtons()
     local dragDeltaThreshold = 5
-
     local function createCircle(name, text, defaultPos, onClick)
         local sg = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
-        sg.Name = name; table.insert(mobileGUIs, sg)
+        sg.Name = name
+        table.insert(mobileGUIs, sg)
         local frame = Instance.new("Frame", sg)
-        frame.Size, frame.BackgroundColor3, frame.BorderSizePixel, frame.Active = UDim2.new(0, 55, 0, 55), Color3.fromRGB(12,12,12), 0, true
+        frame.Size = UDim2.new(0, 55, 0, 55)
+        frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        frame.BorderSizePixel = 0
+        frame.Active = true
         frame.Position = TableToUDim2(savedPositions[name]) or defaultPos
-        UI_Elements[name] = frame; MakeElementDraggable(frame)
-        Instance.new("UICorner", frame).CornerRadius = UDim.new(1,0)
+        UI_Elements[name] = frame
+        MakeElementDraggable(frame)
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(1, 0)
         local lbl = Instance.new("TextLabel", frame)
-        lbl.Size, lbl.BackgroundTransparency, lbl.Text, lbl.Font, lbl.TextSize, lbl.TextColor3 = UDim2.new(1,0,1,0), 1, text, Enum.Font.GothamBold, 13, Color3.fromRGB(170,0,255)
+        lbl.Size = UDim2.new(1, 0, 1, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.Text = text
+        lbl.Font = Enum.Font.GothamBold
+        lbl.TextSize = 12
+        lbl.TextColor3 = Color3.fromRGB(170, 0, 255)
         local start
-        frame.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then start = i.Position end end)
-        frame.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then if start and (i.Position - start).Magnitude < dragDeltaThreshold then onClick(lbl, frame) end end end)
+        frame.InputBegan:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+                start = i.Position
+            end
+        end)
+        frame.InputEnded:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+                if start and (i.Position - start).Magnitude < dragDeltaThreshold then
+                    onClick(lbl, frame)
+                end
+            end
+        end)
     end
 
     createCircle("DropCircle", "DROP\nBR", UDim2.new(0.82, -27, 0.55, 0), function()
@@ -544,18 +729,22 @@ local function createMobileButtons()
     end)
 
     createCircle("FlyCircle", "FLY", UDim2.new(0.82, -60, 0.38, 0), function(lbl)
-        if flying and currentSpeed == 50 then stopFly() lbl.Text = "FLY" else currentSpeed = 50; startFly() lbl.Text = "ON" end
+        if flying and currentSpeed == 50 then stopFly() lbl.Text = "FLY" else currentSpeed = 50 startFly() lbl.Text = "ON" end
     end)
 
     createCircle("CarryCircle", "FLY\nCARRY", UDim2.new(0.82, 5, 0.38, 0), function(lbl)
-        if flying and currentSpeed == 29 then stopFly() lbl.Text = "FLY\nCARRY" else currentSpeed = 29; startFly() lbl.Text = "ON" end
+        if flying and currentSpeed == 29 then stopFly() lbl.Text = "FLY\nCARRY" else currentSpeed = 29 startFly() lbl.Text = "ON" end
     end)
 
     createCircle("TpDownCircle", "TP\nDOWN", UDim2.new(0.82, -27, 0.72, 0), function()
-        if Character and Character:FindFirstChild("HumanoidRootPart") then Character.HumanoidRootPart.Velocity = Vector3.new(Character.HumanoidRootPart.Velocity.X, -120, Character.HumanoidRootPart.Velocity.Z) end
+        if Character and Character:FindFirstChild("HumanoidRootPart") then
+            Character.HumanoidRootPart.Velocity = Vector3.new(Character.HumanoidRootPart.Velocity.X, -120, Character.HumanoidRootPart.Velocity.Z)
+        end
     end)
 
-    createCircle("JukeCircle", jukeEnabled and "JUKE\nON" or "⚡\nJUKE", UDim2.new(0.72, -85, 0.55, 0), function() toggleJuke() end)
+    createCircle("JukeCircle", jukeEnabled and "JUKE\nON" or "JUKE", UDim2.new(0.72, -85, 0.55, 0), function()
+        toggleJuke()
+    end)
     UI_Elements.JukeCircle.BackgroundColor3 = Color3.fromRGB(75, 0, 130)
     if jukeEnabled then updateJukeUI(true) end
 
@@ -576,16 +765,16 @@ local function createMobileButtons()
         autoLeftEnabled = not autoLeftEnabled
         if autoLeftEnabled then
             autoRightEnabled = false
-            stopPatrol()
-            startPatrol("left")
+            if stopPatrol then stopPatrol() end
+            if startPatrol then startPatrol("left") end
             lbl.Text = "LEFT\nON"
             lbl.TextColor3 = Color3.fromRGB(0, 255, 100)
             frame.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
         else
-            stopPatrol()
+            if stopPatrol then stopPatrol() end
             lbl.Text = "AUTO\nLEFT"
             lbl.TextColor3 = Color3.fromRGB(170, 0, 255)
-            frame.BackgroundColor3 = Color3.fromRGB(12,12,12)
+            frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
         end
     end)
 
@@ -593,141 +782,179 @@ local function createMobileButtons()
         autoRightEnabled = not autoRightEnabled
         if autoRightEnabled then
             autoLeftEnabled = false
-            stopPatrol()
-            startPatrol("right")
+            if stopPatrol then stopPatrol() end
+            if startPatrol then startPatrol("right") end
             lbl.Text = "RIGHT\nON"
             lbl.TextColor3 = Color3.fromRGB(0, 255, 100)
             frame.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
         else
-            stopPatrol()
+            if stopPatrol then stopPatrol() end
             lbl.Text = "AUTO\nRIGHT"
             lbl.TextColor3 = Color3.fromRGB(170, 0, 255)
-            frame.BackgroundColor3 = Color3.fromRGB(12,12,12)
+            frame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
         end
     end)
 
-    if autoLeftEnabled and UI_Elements.AutoLeftCircle then
-        local lbl = UI_Elements.AutoLeftCircle:FindFirstChildOfClass("TextLabel")
-        if lbl then lbl.Text = "LEFT\nON"; lbl.TextColor3 = Color3.fromRGB(0, 255, 100) end
-        UI_Elements.AutoLeftCircle.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
-    end
-    if autoRightEnabled and UI_Elements.AutoRightCircle then
-        local lbl = UI_Elements.AutoRightCircle:FindFirstChildOfClass("TextLabel")
-        if lbl then lbl.Text = "RIGHT\nON"; lbl.TextColor3 = Color3.fromRGB(0, 255, 100) end
-        UI_Elements.AutoRightCircle.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+    createCircle("StealSpeedCircle", "STEAL\nSPEED", UDim2.new(0.62, -27, 0.38, 0), function()
+        readSpeedBox()
+        setStealSpeed(not stealSpeedEnabled)
+        task.delay(0.1, saveConfig)
+    end)
+    updateStealSpeedUI()
+end
+
+local function setHubButtonsVisible(v)
+    for _, b in ipairs(hubButtons) do
+        b.Visible = v
     end
 end
 
 -- ===== BUTTON CONNECTIONS =====
-HubButton.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
+HubButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
 
 mobileBtn.MouseButton1Click:Connect(function()
-    mobileFrame.Visible = not mobileFrame.Visible 
-    local v = not mobileFrame.Visible 
-    infJumpBtn.Visible = v 
-    antiRagdollBtn.Visible = v 
-    jukeBtn.Visible = v 
-    fpsBoosterBtn.Visible = v 
-    saveConfigBtn.Visible = v 
+    if settingsOpen then return end
+    mobileFrame.Visible = not mobileFrame.Visible
+    setHubButtonsVisible(not mobileFrame.Visible)
+end)
+
+settingsBtn.MouseButton1Click:Connect(function()
+    settingsOpen = not settingsOpen
+    settingsFrame.Visible = settingsOpen
+    mobileFrame.Visible = false
+    setHubButtonsVisible(not settingsOpen)
+    settingsBtn.Text = settingsOpen and "Close" or "Settings"
+end)
+
+backBtn.MouseButton1Click:Connect(function()
+    settingsOpen = false
+    settingsFrame.Visible = false
+    setHubButtonsVisible(true)
+    settingsBtn.Text = "Settings"
+    readSpeedBox()
+    task.delay(0.1, saveConfig)
 end)
 
 activateBtn.MouseButton1Click:Connect(function()
     mobileButtonsActive = not mobileButtonsActive
-    if mobileButtonsActive then 
-        activateBtn.Text = "Disactivate?" 
-        activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90) 
+    if mobileButtonsActive then
+        activateBtn.Text = "Disactivate?"
+        activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
         createMobileButtons()
-    else 
-        activateBtn.Text = "Activate?" 
-        activateBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40) 
-        for _, g in ipairs(mobileGUIs) do pcall(function() g:Destroy() end) end 
-        mobileGUIs = {} 
+    else
+        activateBtn.Text = "Activate?"
+        activateBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        for _, g in ipairs(mobileGUIs) do
+            pcall(function() g:Destroy() end)
+        end
+        mobileGUIs = {}
+        UI_Elements.StealSpeedCircle = nil
     end
     task.delay(0.1, saveConfig)
 end)
 
 antiRagdollBtn.MouseButton1Click:Connect(function()
     antiRagdollEnabled = not antiRagdollEnabled
-    if antiRagdollEnabled then 
-        antiRagdollBtn.Text = "Anti Ragdoll: ON" 
-        antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90) 
+    if antiRagdollEnabled then
+        antiRagdollBtn.Text = "Anti Ragdoll: ON"
+        antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
         setupAntiRagdoll()
-    else 
-        antiRagdollBtn.Text = "Anti Ragdoll: OFF" 
-        antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40) 
-        if ragdollConnection then ragdollConnection:Disconnect() end 
-        if flying then stopFly() end 
+    else
+        antiRagdollBtn.Text = "Anti Ragdoll: OFF"
+        antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        if ragdollConnection then ragdollConnection:Disconnect() end
+        if flying then stopFly() end
     end
     task.delay(0.1, saveConfig)
 end)
 
 local function toggleInfiniteJump(forceState)
-    if forceState ~= nil then infiniteJumpEnabled = forceState else infiniteJumpEnabled = not infiniteJumpEnabled end
+    if forceState ~= nil then
+        infiniteJumpEnabled = forceState
+    else
+        infiniteJumpEnabled = not infiniteJumpEnabled
+    end
     if infiniteJumpEnabled then
-        infJumpBtn.Text = "Infinite Jump: ON" 
+        infJumpBtn.Text = "Infinite Jump: ON"
         infJumpBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+        if jumpConnection then jumpConnection:Disconnect() end
         jumpConnection = RunService.Heartbeat:Connect(function()
             if infiniteJumpEnabled and UserInputService:IsKeyDown(Enum.KeyCode.Space) and Character and Character:FindFirstChild("HumanoidRootPart") then
-                local hrp = Character.HumanoidRootPart 
+                local hrp = Character.HumanoidRootPart
                 local hum = Character:FindFirstChildOfClass("Humanoid")
-                if hum and hum.Health > 0 and hrp.Velocity.Y < 5 then 
-                    hrp.Velocity = Vector3.new(hrp.Velocity.X, math.max(hrp.Velocity.Y + 16, 38), hrp.Velocity.Z) 
+                if hum and hum.Health > 0 and hrp.Velocity.Y < 5 then
+                    hrp.Velocity = Vector3.new(hrp.Velocity.X, math.max(hrp.Velocity.Y + 16, 38), hrp.Velocity.Z)
                 end
             end
         end)
-    else 
-        infJumpBtn.Text = "Infinite Jump: OFF" 
-        infJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40) 
-        if jumpConnection then jumpConnection:Disconnect() end 
+    else
+        infJumpBtn.Text = "Infinite Jump: OFF"
+        infJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        if jumpConnection then jumpConnection:Disconnect() end
     end
 end
-infJumpBtn.MouseButton1Click:Connect(function() toggleInfiniteJump() task.delay(0.1, saveConfig) end)
+infJumpBtn.MouseButton1Click:Connect(function()
+    toggleInfiniteJump()
+    task.delay(0.1, saveConfig)
+end)
 
 saveConfigBtn.MouseButton1Click:Connect(function()
-    saveConfig() 
-    local old = saveConfigBtn.Text 
-    saveConfigBtn.Text = "✅ Saved Layout!" 
+    saveConfig()
+    local old = saveConfigBtn.Text
+    saveConfigBtn.Text = "Saved Layout!"
     saveConfigBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
-    task.delay(1.5, function() 
-        if saveConfigBtn then 
-            saveConfigBtn.Text = old 
-            saveConfigBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40) 
-        end 
+    task.delay(1.5, function()
+        if saveConfigBtn then
+            saveConfigBtn.Text = old
+            saveConfigBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        end
     end)
 end)
 
--- ===== RECOVERY / LOAD CONFIG =====
+-- ===== LOAD CONFIG =====
 task.spawn(function()
     task.wait(1.5)
-    local path = getConfigPath() 
+    local path = getConfigPath()
     if not isfile(path) then return end
     local success, config = pcall(function() return HttpService:JSONDecode(readfile(path)) end)
     if success and config then
         if config.positions then savedPositions = config.positions end
         if savedPositions["HubButton"] then HubButton.Position = TableToUDim2(savedPositions["HubButton"]) end
         if savedPositions["MainFrame"] then MainFrame.Position = TableToUDim2(savedPositions["MainFrame"]) end
-        if config.antiRagdollEnabled then 
-            antiRagdollEnabled = true 
-            antiRagdollBtn.Text = "Anti Ragdoll: ON" 
-            antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90) 
-            setupAntiRagdoll() 
+        if config.customSpeed then
+            customSpeed = config.customSpeed
+            speedBox.Text = tostring(customSpeed)
+        end
+        if config.normalSpeed then normalSpeed = config.normalSpeed end
+        if config.antiRagdollEnabled then
+            antiRagdollEnabled = true
+            antiRagdollBtn.Text = "Anti Ragdoll: ON"
+            antiRagdollBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+            setupAntiRagdoll()
         end
         if config.infiniteJumpEnabled then toggleInfiniteJump(true) end
-        if config.autoBatEnabled then autoBatEnabled = true if not flying then startFly() end end
-        if config.jukeEnabled then jukeEnabled = true updateJukeUI(true) end
+        if config.autoBatEnabled then
+            autoBatEnabled = true
+            if not flying then startFly() end
+        end
+        if config.jukeEnabled then
+            jukeEnabled = true
+            updateJukeUI(true)
+        end
         if config.fpsBoosterEnabled then setFPSBooster(true) end
         if config.autoLeftEnabled then autoLeftEnabled = true end
         if config.autoRightEnabled then autoRightEnabled = true end
-
-        if config.mobileButtonsActive then 
-            mobileButtonsActive = true 
-            activateBtn.Text = "Disactivate?" 
-            activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90) 
-            createMobileButtons() 
+        if config.stealSpeedEnabled then stealSpeedEnabled = true end
+        if config.mobileButtonsActive then
+            mobileButtonsActive = true
+            activateBtn.Text = "Disactivate?"
+            activateBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 90)
+            createMobileButtons()
         end
-
-        if autoLeftEnabled then startPatrol("left") end
-        if autoRightEnabled then startPatrol("right") end
+        if stealSpeedEnabled then setStealSpeed(true) end
+        if autoLeftEnabled and startPatrol then startPatrol("left") end
+        if autoRightEnabled and startPatrol then startPatrol("right") end
     end
 end)
-
